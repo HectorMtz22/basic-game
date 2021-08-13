@@ -51,7 +51,10 @@ const draw = () => {
   ctx.fillRect(apple.x, apple.y, 20, 20);
 };
 
-const input = () => {};
+const input = (e) => {
+  const { key } = e;
+  snake.direction = key;
+};
 
 function update() {
   for (let i = snake.tail.length - 1; i > 0; i--) {
@@ -77,8 +80,32 @@ function update() {
     }
   }
 
+  if (apple.spawned == false) {
+    apple.x = Math.floor(Math.random() * (700 / 20)) * 20;
+    apple.y = Math.floor(Math.random() * (700 / 20)) * 20;
+    apple.spawned = true;
+  }
+
+  if (isColliding(snake.tail[0], apple)) {
+    apple.spawned = false;
+    score = score + 1;
+    snake.tail.push({
+      x: snake.tail[0].x,
+      y: snake.tail[0].y,
+    });
+  }
   draw();
 }
 
+const isColliding = (rect1, rect2) => {
+  return (
+    rect1.x < rect2.x + 20 &&
+    rect1.x + 20 > rect2.x &&
+    rect1.y < rect2.y + 20 &&
+    rect1.y + 20 > rect2.y
+  );
+};
+
 restart();
-setInterval(update, 1000 / 10);
+document.addEventListener("keydown", input);
+setInterval(update, 1000 / 5);
